@@ -102,7 +102,7 @@ class OpcodeTable {
     string funct_field;
 
     // Creates an initial OpcodeTableEntry with default values
-    OpcodeTableEntry(){
+    OpcodeTableEntry() {
       numOps = 0;
       rdPos = rsPos = rtPos = immPos = -1;
       immLabel = false;
