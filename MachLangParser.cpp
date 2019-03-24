@@ -5,11 +5,12 @@
  */
 
 MachLangParser::MachLangParser(string inputfile)
-                               : myFormatCorrect(true),
-                                 myIndex(0)
 // TODO docstring goes here
 // DEBUG
 {
+    myFormatCorrect = true;
+    myIndex = 0;
+
     cout << "HERE ... ?" << endl;
     Instruction i;
 
