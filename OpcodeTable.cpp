@@ -102,6 +102,18 @@ OpcodeTable::OpcodeTable()
   myArray[LW].op_field = "100011";
   myArray[LW].funct_field = "";
 
+  // beq
+  myArray[BEQ].name = "beq";
+  myArray[BEQ].numOps = 3;
+  myArray[BEQ].rdPos = -1;
+  myArray[BEQ].rsPos = 0;
+  myArray[BEQ].rtPos = 1;
+  myArray[BEQ].immPos = 2;
+  // myArray[BEQ].immLabel = true; // !
+  myArray[BEQ].instType = ITYPE;
+  myArray[BEQ].op_field = "000100";
+  myArray[BEQ].funct_field = "";
+
   // j
   myArray[J].name = "j";
   myArray[J].numOps = 1;
@@ -113,18 +125,6 @@ OpcodeTable::OpcodeTable()
   myArray[J].instType = JTYPE;
   myArray[J].op_field = "000010";
   myArray[J].funct_field = "";
-
-  // beq
-  myArray[BEQ].name = "beq";
-  myArray[BEQ].numOps = 3;
-  myArray[BEQ].rdPos = -1;
-  myArray[BEQ].rsPos = 0;
-  myArray[BEQ].rtPos = 1;
-  myArray[BEQ].immPos = 2;
-  myArray[BEQ].immLabel = true; // !
-  myArray[BEQ].instType = ITYPE;
-  myArray[BEQ].op_field = "000100";
-  myArray[BEQ].funct_field = "";
 
 }
 

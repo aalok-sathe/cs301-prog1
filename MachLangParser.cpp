@@ -143,7 +143,7 @@ void MachLangParser::decodeIType(Instruction& i)
         opc,
         convertToInt(rs),
         convertToInt(rt),
-        -1,
+        32,
         convertToInt(imm)
     );
 }
@@ -159,9 +159,9 @@ void MachLangParser::decodeJType(Instruction& i)
 
     i.setValues(
         opc,
-        -1,
-        -1,
-        -1,
+        32,
+        32,
+        32,
         convertToInt(addr)
     );
 }

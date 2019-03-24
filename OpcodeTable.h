@@ -18,9 +18,9 @@ enum Opcode {
   SRA,  // 6
   SLTI, // 7
   LW,   // 8
-  J,    // 9
-  BEQ,  // 10
-  UNDEFINED
+  BEQ,  // 9
+  J,    // 10
+  UNDEFINED // 11
 };
 
 
