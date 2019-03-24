@@ -33,7 +33,6 @@ MachLangParser::MachLangParser(string inputfile)
             break;
         }
         i.setEncoding(line);
-        i.setAssembly("// TODO");
 
         decode(i);
         if (i.getOpcode() == UNDEFINED)
@@ -117,14 +116,16 @@ void MachLangParser::decodeRType(Instruction& i)
     string imm = encoding.substr(21, 5);
     string funct = encoding.substr(26, 6);
 
+    cout << "DEBUG Rtype: " << rd
+         << " " << rs << " " << rt << endl;
     Opcode opc = opcodes.getInstr(opstr, funct);
 
     i.setValues(
         opc,
-        convertToInt(rs),
-        convertToInt(rt),
-        convertToInt(rd),
-        convertToInt(imm)
+        convertToInt(rs, UNSIGNED),
+        convertToInt(rt, UNSIGNED),
+        convertToInt(rd, UNSIGNED),
+        convertToInt(imm, UNSIGNED)
     );
 
 }
@@ -142,10 +143,10 @@ void MachLangParser::decodeIType(Instruction& i)
 
     i.setValues(
         opc,
-        convertToInt(rs),
-        convertToInt(rt),
+        convertToInt(rs, UNSIGNED),
+        convertToInt(rt, UNSIGNED),
         32,
-        convertToInt(imm)
+        convertToInt(imm, SIGNED)
     );
 }
 
@@ -163,15 +164,24 @@ void MachLangParser::decodeJType(Instruction& i)
         32,
         32,
         32,
-        convertToInt(addr)
+        convertToInt(addr, SIGNED)
     );
 }
 
 
-int MachLangParser::convertToInt(string s)
+int MachLangParser::convertToInt(string s, SignFlag f)
 {
+    if ((int)f == 1)
+    {
+        int extn = ARCH_NUM_BITS - s.size();
+        string signextend(extn, s[0]);
+        signextend += s;
+        std::bitset<ARCH_NUM_BITS> bits(signextend);
+        return (int)(bits.to_ulong());
+    }
+
     std::bitset<ARCH_NUM_BITS> bits(s);
-    return (int)bits.to_ulong();
+    return (int)(bits.to_ulong());
 }
 
 
@@ -189,43 +199,90 @@ void MachLangParser::assemble(Instruction& i)
     else // if (type == 2)
         assembled += assembleJType(i);
 
-    cout << "assembled:\t" << assembled << endl;
+    // cout << "assembled:\t" << assembled << "\n"
+    //      << "opc: " << i.getOpcode()
+    //      << " numOps: " << opcodes.numOperands(i.getOpcode())
+    //      << endl << endl;
     i.setAssembly(assembled);
 }
 
 
 string MachLangParser::assembleRType(Instruction i)
 {
-    string assembled = "";
+    ostringstream assembled;
     Opcode opc = i.getOpcode();
 
-    for (int i = 0; i < opcodes.numOperands(opc); i++)
+    for (int it = 0; it < opcodes.numOperands(opc); it++)
     {
-        if (opcodes.RSposition(opc) == i)
+        if (opcodes.RSposition(opc) == it)
         {
-
+            assembled << "$" << i.getRS();
         }
-        if (opcodes.RTposition(opc) == i)
+        else if (opcodes.RTposition(opc) == it)
         {
-
+            assembled << "$" << i.getRT();
         }
-        if (opcodes.RDposition(opc) == i)
+        else if (opcodes.RDposition(opc) == it)
         {
-
+            assembled << "$" << i.getRD();
         }
-        if (opcodes.IMMposition(opc) == i)
+        else if (opcodes.IMMposition(opc) == it)
         {
-
+            assembled << i.getImmediate();
         }
+        if (it < opcodes.numOperands(opc) - 1)
+            assembled << ", ";
     }
 
-    return "";
+    return assembled.str();
 }
 
 
 string MachLangParser::assembleIType(Instruction i)
 {
-    return "";
+    if (i.getOpcode() != BEQ and i.getOpcode() != LW)
+        return assembleRType(i);
+
+    ostringstream assembled;
+    Opcode opc = i.getOpcode();
+
+    if (i.getOpcode() == LW)
+        for (int it = 0; it < opcodes.numOperands(opc); it++)
+        {
+            if (opcodes.RSposition(opc) == it)
+            {
+                assembled << "$" << i.getRS() << ")";
+            }
+            else if (opcodes.RTposition(opc) == it)
+            {
+                assembled << "$" << i.getRT() << ", ";
+            }
+            else if (opcodes.IMMposition(opc) == it)
+            {
+                assembled << i.getImmediate() << "(";
+            }
+        }
+    else if (i.getOpcode() == BEQ)
+        for (int it = 0; it < opcodes.numOperands(opc); it++)
+        {
+            if (opcodes.RSposition(opc) == it)
+            {
+                assembled << "$" << i.getRS();
+            }
+            else if (opcodes.RTposition(opc) == it)
+            {
+                assembled << "$" << i.getRT();
+            }
+            else if (opcodes.IMMposition(opc) == it)
+            {
+                assembled << hex << i.getImmediate();
+            }
+            if (it < opcodes.numOperands(opc) - 1)
+                assembled << ", ";
+        }
+
+    return assembled.str();
+
 }
 
 

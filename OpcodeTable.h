@@ -8,7 +8,7 @@ using namespace std;
 
 
 // Listing of all supported MIPS instructions
-enum Opcode {
+enum Opcode{
   ADD,  // 0
   ADDI, // 1
   SUB,  // 2
@@ -18,8 +18,8 @@ enum Opcode {
   SRA,  // 6
   SLTI, // 7
   LW,   // 8
-  BEQ,  // 9
-  J,    // 10
+  J,    // 9
+  BEQ,  // 10
   UNDEFINED // 11
 };
 

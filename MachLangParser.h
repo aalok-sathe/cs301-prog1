@@ -13,6 +13,12 @@
 
 using namespace std;
 
+
+enum SignFlag{
+    UNSIGNED, // 0
+    SIGNED    // 1
+};
+
 /* This class reads in a machine language representation of a MIPS
  * program.  If the file is correctly formatted (i.e. every line
  * contains a properly formatted 32 bit machine language/binary
@@ -65,7 +71,7 @@ class MachLangParser{
 
     void decodeJType(Instruction& i);
 
-    int convertToInt(string s);
+    int convertToInt(string s, SignFlag f);
 
     void assemble(Instruction& i);
 
@@ -75,5 +81,6 @@ class MachLangParser{
 
 
 };
+
 
 #endif
