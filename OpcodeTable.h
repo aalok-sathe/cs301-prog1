@@ -19,7 +19,7 @@ enum Opcode {
   SLTI, // 7
   LW,   // 8
   J,    // 9
-  // BEQ,  // 10
+  BEQ,  // 10
   UNDEFINED
 };
 
