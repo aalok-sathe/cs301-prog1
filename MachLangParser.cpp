@@ -11,7 +11,6 @@ MachLangParser::MachLangParser(string inputfile)
     myFormatCorrect = true;
     myIndex = 0;
 
-    cout << "HERE ... ?" << endl;
     Instruction i;
 
     ifstream in;
@@ -26,7 +25,7 @@ MachLangParser::MachLangParser(string inputfile)
     string line;
     while (getline(in, line))
     {
-        cout << "Line:\t" << line << endl;
+        // cout << "Line:\t" << line << endl;
         if (not isLineCorrect(line))
         {
             myFormatCorrect = false;
@@ -41,7 +40,7 @@ MachLangParser::MachLangParser(string inputfile)
             break;
         }
         assemble(i);
-        cout << "Instr:\t" << i.getString() << endl;
+        // cout << "Instr:\t" << i.getString() << endl;
 
         myInstructions.push_back(i);
 
@@ -116,8 +115,8 @@ void MachLangParser::decodeRType(Instruction& i)
     string imm = encoding.substr(21, 5);
     string funct = encoding.substr(26, 6);
 
-    cout << "DEBUG Rtype: " << rd
-         << " " << rs << " " << rt << endl;
+    // cout << "DEBUG Rtype: " << rd
+    //      << " " << rs << " " << rt << endl;
     Opcode opc = opcodes.getInstr(opstr, funct);
 
     i.setValues(
@@ -275,7 +274,7 @@ string MachLangParser::assembleIType(Instruction i)
             }
             else if (opcodes.IMMposition(opc) == it)
             {
-                assembled << hex << i.getImmediate();
+                assembled << "0x" << hex << i.getImmediate()*4;
             }
             if (it < opcodes.numOperands(opc) - 1)
                 assembled << ", ";
@@ -288,5 +287,26 @@ string MachLangParser::assembleIType(Instruction i)
 
 string MachLangParser::assembleJType(Instruction i)
 {
-    return "";
+    ostringstream assembled;
+    Opcode opc = i.getOpcode();
+    for (int it = 0; it < opcodes.numOperands(opc); it++)
+    {
+        if (opcodes.RSposition(opc) == it)
+        {
+            assembled << "$" << i.getRS();
+        }
+        else if (opcodes.RTposition(opc) == it)
+        {
+            assembled << "$" << i.getRT();
+        }
+        else if (opcodes.IMMposition(opc) == it)
+        {
+            assembled << "0x" << hex << i.getImmediate()*4;
+        }
+        if (it < opcodes.numOperands(opc) - 1)
+            assembled << ", ";
+    }
+
+    return assembled.str();
+
 }
