@@ -5,6 +5,7 @@ using namespace std;
 
 #include <iostream>
 #include <string>
+#include <bitset>
 
 
 // Listing of all supported MIPS instructions
@@ -111,6 +112,8 @@ class OpcodeTable {
 
   // The array of OpcodeTableEntries, one for each MIPS instruction supported
   OpcodeTableEntry myArray[UNDEFINED];
+
+  static const int OPCODE_LEN = 6;
 
 
 };

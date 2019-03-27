@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
   MachLangParser *parser;
 
   if(argc != 2){
-    cerr << "You must entire an input file " << endl;
+    cerr << "You must enter an input file name " << endl;
     exit(1);
   }
 
@@ -36,7 +36,8 @@ int main(int argc, char *argv[])
   // representation.
   i = parser->getNextInstruction();
 
-  while( i.getOpcode() != UNDEFINED ){
+  while( i.getOpcode() != UNDEFINED )
+  {
     cout << i.getEncoding() << "\t";
     cout << i.getAssembly() << endl ;
     i = parser->getNextInstruction();

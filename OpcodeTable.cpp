@@ -236,7 +236,8 @@ Opcode OpcodeTable::getInstr(string opc, string funct)
     // cout << "At entry\t" << i << endl;
     if (myArray[i].op_field == opc)
     {
-        if (myArray[i].op_field != "000000")
+        bitset<OPCODE_LEN> op_bits(myArray[i].op_field);
+        if ((int)op_bits.to_ulong() != 0)
             return (Opcode)i;
         else if (myArray[i].funct_field == funct)
             return (Opcode)i;

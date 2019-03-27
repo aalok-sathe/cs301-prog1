@@ -14,6 +14,8 @@
 using namespace std;
 
 
+// an enum to be passed to convertToInt method that
+// dictates if the conversion should be signed or unsigned
 enum SignFlag{
     UNSIGNED, // 0
     SIGNED    // 1
@@ -56,6 +58,8 @@ class MachLangParser{
 
     OpcodeTable opcodes;
 
+    static const int OPCODE_LEN = 6;
+    static const int SHAMT_LEN = 5;
     static const int REG_WIDTH = 5;
     static const int J_ADDR_WIDTH = 26;
     static const int IMM_WIDTH = 16;
