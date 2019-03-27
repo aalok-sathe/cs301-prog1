@@ -99,3 +99,18 @@
     In order to adapt the program to a different architecture with a differing number of bits,
     you would need to alter the constants defined in MachLangParser.h, and the constant
     NumRegisters in RegisterTable.
+
+
+    --Testing--
+
+    Test 1: (test1.mach)
+        contains valid machine language instructions that are implemented in the program.
+    
+    Test 2: (test2.mach)
+        contains invalid characters (non 0 or 1)
+
+    Test 3: (test3.mach)
+        contains some lines that are smaller as well as larger than 32 bits
+
+    Test 4: (test4.mach)
+        contains a non-implemented opcode
