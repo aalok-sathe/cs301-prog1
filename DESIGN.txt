@@ -43,7 +43,7 @@
         underlying representation of the data contained in a MIPS Assembly
         instruction, storing the opcode, type of instruction, values in its various
         registers and operands like imm and funct. It supports getter and setter
-        methods to retrieve the said values and set them to some other value. The 
+        methods to retrieve the said values and set them to some other value. The
         Instruction object may store an encoding and a decoding of the instruction.
 
     MachLangParser:
@@ -52,7 +52,7 @@
         processing and decoding each one of them and storing them as Instructions.
         It supports getting the next instruction in assembly for iterative access.
 
-    
+
     --Organization--
 
     The driver file, 'DisASM.cpp', reads in from commandline argument the name of the
@@ -75,7 +75,7 @@
     a machine code line, followed by a '\t' tab character, followed by the decoded and
     disassembled assembly language instruction, to stdout.
 
-    
+
     --Extension--
 
     In order to add support for a new MIPS instruction not currently supported, you
@@ -99,18 +99,3 @@
     In order to adapt the program to a different architecture with a differing number of bits,
     you would need to alter the constants defined in MachLangParser.h, and the constant
     NumRegisters in RegisterTable.
-
-
-    --Testing--
-
-    Test 1: (test1.mach)
-        contains valid machine language instructions that are implemented in the program.
-    
-    Test 2: (test2.mach)
-        contains invalid characters (non 0 or 1)
-
-    Test 3: (test3.mach)
-        contains some lines that are smaller as well as larger than 32 bits
-
-    Test 4: (test4.mach)
-        contains a non-implemented opcode
