@@ -99,6 +99,7 @@ OpcodeTable::OpcodeTable()
   myArray[LW].rtPos = 0;
   myArray[LW].immPos = 1;
   myArray[LW].instType = ITYPE;
+  myArray[LW].instFunc = MEMORY;
   myArray[LW].op_field = "100011";
   myArray[LW].funct_field = "";
 
@@ -109,8 +110,9 @@ OpcodeTable::OpcodeTable()
   myArray[J].rsPos = -1;
   myArray[J].rtPos = -1;
   myArray[J].immPos = 0;
-  myArray[J].immLabel = true; // !
+  myArray[J].immLabel = true;
   myArray[J].instType = JTYPE;
+  myArray[J].instFunc = CONTROL;
   myArray[J].op_field = "000010";
   myArray[J].funct_field = "";
 
@@ -121,8 +123,9 @@ OpcodeTable::OpcodeTable()
   myArray[BEQ].rsPos = 0;
   myArray[BEQ].rtPos = 1;
   myArray[BEQ].immPos = 2;
-  // myArray[BEQ].immLabel = true; // !
+  myArray[BEQ].immLabel = true;
   myArray[BEQ].instType = ITYPE;
+  myArray[BEQ].instFunc = CONTROL;
   myArray[BEQ].op_field = "000100";
   myArray[BEQ].funct_field = "";
 
@@ -224,29 +227,47 @@ bool OpcodeTable::isIMMLabel(Opcode o)
   return myArray[o].immLabel;
 }
 
-//------------
+
 Opcode OpcodeTable::getInstr(string opc, string funct)
-// TODO Given a valid MIPS assembly mnemonic, returns an Opcode which represents a
-// template for that instruction.
+// Given a string of opcode bits and a string of the funct field
+// (if applicable), returns the Opcode (enum member) corresponding
+// to the instruction determined by that opcode and funct field values
 {
-    //DEBUG
-  // cout << "Received:\t" << opc << endl;
-  for (int i = 0; i < (int)UNDEFINED; i++)
-  {
-    // cout << "At entry\t" << i << endl;
-    if (myArray[i].op_field == opc)
+    for (int i = 0; i < (int)UNDEFINED; i++)
     {
-        bitset<OPCODE_LEN> op_bits(myArray[i].op_field);
-        if ((int)op_bits.to_ulong() != 0)
-            return (Opcode)i;
-        else if (myArray[i].funct_field == funct)
-            return (Opcode)i;
+        if (myArray[i].op_field == opc)
+        {
+            bitset<OPCODE_LEN> op_bits(myArray[i].op_field);
+            if ((int)op_bits.to_ulong() != 0)
+                return (Opcode)i;
+            else if (myArray[i].funct_field == funct)
+                return (Opcode)i;
+        }
     }
-  }
-  return UNDEFINED;
+
+    return UNDEFINED;
 }
 
+
 string OpcodeTable::getName(Opcode o)
+// Given a valid Opcode (enum member) o, returns
+// the string name of the instruction corresponding
+// to it
 {
-    return myArray[o].name;
+    if (o >= 0 and o < UNDEFINED)
+        return myArray[o].name;
+    else
+        return string("");
+}
+
+
+InstFunc OpcodeTable::getInstFunc(Opcode o)
+// Given a valid Opcode (enum member) o, returns the
+// InstFunc of the corresponding instruction, saying what
+// function the instruction performs (MEMORY/CONTROL/ARITHM)
+{
+    if (o >= 0 and o < UNDEFINED)
+        return myArray[o].instFunc;
+    else
+        return (InstFunc)-1;
 }

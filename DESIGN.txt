@@ -1,0 +1,101 @@
+
+    #   Design document for programming_1
+        Machine language decoder
+
+    --Overview--
+
+    This program serves to convert from machine code to assembly code.
+    It expects to receive a string name of a file to read in as a commandline
+    argument. If the file contains valid machine code that is properly formatted
+    as binary strings, and has one of the supported instructions, the program
+    will output corresponding decoded assembly instructions to stdout, one on
+    each new line.
+
+    This program consists of the classes
+        - MachLangParser
+        - OpcodeTable
+        - Instruction
+        - RegisterTable
+    and uses 'DisASM.cpp' as its driver file.
+
+
+    --Description of classes--
+
+    OpcodeTable:
+        This class supports the abstraction of instructions, and organizes them
+        by an enum 'Opcode' identifier. For each instruction, it maintains
+        information about the name, number of operands, position of each operand,
+        and all relevant information required to correctly assemble or disassemble
+        an instruction. The kinds of fields stored include: registers, immediates,
+        shamt, funct field, and so on.
+        To add a new instruction, you would need to simply add an entry to 'myArray'
+        in the constructor, closely following existing initialization statements
+        for other instructions. You would also need to add a new enum member to the
+        enum 'Opcode' to indentify the new instruction by, usually its MIPS name.
+
+    RegisterTable:
+        This class defines a structure 'Register', one that stores the MIPS
+        shorthand version (e.g. '$t0') as well as its corresponding register number
+        and provides a useful way to go from name to number.
+
+    Instruction:
+        This class defines the 'Instruction' object that holds an intermediate
+        underlying representation of the data contained in a MIPS Assembly
+        instruction, storing the opcode, type of instruction, values in its various
+        registers and operands like imm and funct. It supports getter and setter
+        methods to retrieve the said values and set them to some other value. The 
+        Instruction object may store an encoding and a decoding of the instruction.
+
+    MachLangParser:
+        This class expects to read in a valid machine language code file containing
+        one instruction per line. It initializes with all the lines in the file,
+        processing and decoding each one of them and storing them as Instructions.
+        It supports getting the next instruction in assembly for iterative access.
+
+    
+    --Organization--
+
+    The driver file, 'DisASM.cpp', reads in from commandline argument the name of the
+    input file, and passes this to initialize an instance of MachLangParser. In the
+    process, DisASM handles bad file I/O. The MachLangParser initializer makes sure
+    to see if each line in the file is formatted correctly, and will maintain an
+    internal flag indicating this. It will do so using its own instance of OpcodeTable,
+    to make sure the decoded opcode and (if applicable) funct field of the binary line
+    of machine code actually correspond to a supported MIPS Assembly instruction. If
+    they don't, the format is considered incorrect, and is noted so.
+    If the file has correct syntax, the MachLangParser object will construct an internal
+    list of decoded and disassembled instructions available to get using its method
+    'getNextInstruction', to support sequential iteration.
+    Each Instruction is correctly initialized with appropriate values by converting
+    substrings of the binary machine code to integers, and using OpcodeTable
+    to determine the syntactic placement of these values with respect to one another.
+
+    If the initialization goes well and the format is found to be correct, DisASM iterates
+    through the instructions in MachLangParser using 'getNextInstruction' and prints out
+    a machine code line, followed by a '\t' tab character, followed by the decoded and
+    disassembled assembly language instruction, to stdout.
+
+    
+    --Extension--
+
+    In order to add support for a new MIPS instruction not currently supported, you
+    would need to add to the enum Opcode in class OpcodeTable. You would also need to
+    add entries about the various fields of the instruction, such as the registers it
+    may use, whether the immediate field is used, and their positions, to the constructor
+    in OpcodeTable.cpp. In the constructor, you would need to make sure to write what
+    kind of instruction it is: MEMORY, ARITHM (arithmetic), or CONTROL, defined using an
+    enum InstFunc from OpcodeTable. In the methods
+    to assemble instructions for each of R, I, J, there may be further subdivision by
+    the kind of function of the instruction, particularly the I-type instructions, which
+    already have such subdivision into cases based on function within the helper method to
+    assemble IType. You would need to make sure that the existing subdivision works for the
+    new instruction you would be adding, and if not make another case to account for its
+    speciality. Particularly, in R-Type and J-Type, only a single kind of instruction is
+    accounted for at the moment, but further cases can be made based on the InstFunc of the
+    instruction, obtainable using the getInstFunc method of OpcodeTable. You would need to
+    make these cases and code the syntax corresponding to these instructions in these cases
+    to get appropriately formatted output.
+
+    In order to adapt the program to a different architecture with a differing number of bits,
+    you would need to alter the constants defined in MachLangParser.h, and the constant
+    NumRegisters in RegisterTable.

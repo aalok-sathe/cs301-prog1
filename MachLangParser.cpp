@@ -5,7 +5,6 @@
  */
 
 MachLangParser::MachLangParser(string inputfile)
-// TODO docstring goes here
 // Default constructor for the MachLangParser class.
 // Initializes using a string filename of an input file,
 // and processes each line in that input file to decode
@@ -65,7 +64,6 @@ MachLangParser::MachLangParser(string inputfile)
         myInstructions.push_back(i);
 
     }
-
 }
 
 
@@ -90,9 +88,14 @@ Instruction MachLangParser::getNextInstruction()
 
 
 bool MachLangParser::isLineCorrect(string line)
-// Checks to see if each of these conditions is matched:
+// takes in an input binary line and
+// checks to see if each of these conditions is matched:
 // 1.  length == ARCH_NUM_BITS
 // 2.  contains only 1s and 0s
+//
+// Parameters:
+//  string line := input line in binary that is
+//                     a machine instruction
 {
     // check if line has appropriate length
     if (line.length() != ARCH_NUM_BITS)
@@ -108,11 +111,16 @@ bool MachLangParser::isLineCorrect(string line)
 
 
 void MachLangParser::decode(Instruction& i)
-// A method that takes in an Instruction object i by
+// a method that takes in an Instruction object i by
 // reference, with an initialized encoding field that
 // is a binary string, and decodes it to figure out
 // its opcode, and registers, imm, shamt, and funct field,
 // as applicable
+//
+// Parameters:
+//  Instruction i := the instruction whose fields need to be
+//                   initialized to their respective values
+//                   based on machine code encoding
 {
     string opc = i.getEncoding().substr(0, OPCODE_LEN);
     string funct = i.getEncoding().substr(
@@ -134,6 +142,11 @@ void MachLangParser::decode(Instruction& i)
 
 void MachLangParser::decodeRType(Instruction& i)
 // a decode helper method specific to R-type instructions
+//
+// Parameters:
+//  Instruction i := the instruction whose fields need to be
+//                   initialized to their respective values
+//                   based on machine code encoding
 {
     // start with the binary string
     string encoding = i.getEncoding();
@@ -171,6 +184,11 @@ void MachLangParser::decodeRType(Instruction& i)
 
 void MachLangParser::decodeIType(Instruction& i)
 // a decode helper method specific to I-type instructions
+//
+// Parameters:
+//  Instruction i := the instruction whose fields need to be
+//                   initialized to their respective values
+//                   based on machine code encoding
 {
     string encoding = i.getEncoding();
 
@@ -205,6 +223,11 @@ void MachLangParser::decodeIType(Instruction& i)
 
 void MachLangParser::decodeJType(Instruction& i)
 // a decode helper method specific to J-type instructions
+//
+// Parameters:
+//  Instruction i := the instruction whose fields need to be
+//                   initialized to their respective values
+//                   based on machine code encoding
 {
     string encoding = i.getEncoding();
 
@@ -258,9 +281,15 @@ void MachLangParser::assemble(Instruction& i)
 // method that takes an instruction with all the
 // appropriate fields filled in, and puts together
 // an assembly instruction
+//
+// Parameters:
+//  Instruction i := the instruction whose fields are initialized
+//                   to appropriate values and the instruction
+//                   needs to be converted to assembly
 {
     string assembled;
 
+    // pick which helper method to call based on InstType
     InstType type = opcodes.getInstType(i.getOpcode());
     if (type == RTYPE)
         assembled = assembleRType(i);
@@ -274,7 +303,12 @@ void MachLangParser::assemble(Instruction& i)
 
 
 string MachLangParser::assembleRType(Instruction i)
-// assemble specific to R-type: put together
+// assemble helper method specific to R-type
+//
+// Parameters:
+//  Instruction i := the instruction whose fields are initialized
+//                   to appropriate values and the instruction
+//                   needs to be converted to assembly
 {
     ostringstream assembled;
     // start with the instruction name corresponding to opcode
@@ -282,6 +316,9 @@ string MachLangParser::assembleRType(Instruction i)
 
     Opcode opc = i.getOpcode();
 
+    // go through each operand position and add only if the
+    // operand's position matches the current position being
+    // assembled.
     for (int it = 0; it < opcodes.numOperands(opc); it++)
     {
         if (opcodes.RSposition(opc) == it)
@@ -302,15 +339,25 @@ string MachLangParser::assembleRType(Instruction i)
 
 
 string MachLangParser::assembleIType(Instruction i)
-// assemble specific to I-type: put together
+// assemble helper method specific to I-type
+//
+// Parameters:
+//  Instruction i := the instruction whose fields are initialized
+//                   to appropriate values and the instruction
+//                   needs to be converted to assembly
 {
     ostringstream assembled;
     // start with the instruction name corresponding to opcode
     assembled << opcodes.getName(i.getOpcode()) + "\t";
 
     Opcode opc = i.getOpcode();
-    if (opc != BEQ and opc != LW)
+
+    // case: if instruction is arithmetic-function
+    if (opcodes.getInstFunc(opc) == ARITHM)
     {
+        // go through each operand position and add only if the
+        // operand's position matches the current position being
+        // assembled.
         for (int it = 0; it < opcodes.numOperands(opc); it++)
         {
             if (opcodes.RSposition(opc) == it)
@@ -325,16 +372,10 @@ string MachLangParser::assembleIType(Instruction i)
             if (it < opcodes.numOperands(opc) - 1)
                 assembled << ", ";
         }
-        return assembled.str();
     }
-
-    // only LW or BEQ
-    // go through each operand position and add only if the
-    // operand's position matches the current position being
-    // assembled.
-    // LW:
-    //  add support to display an offset to a register
-    if (i.getOpcode() == LW)
+    // case: if instruction is memory-function
+    else if (opcodes.getInstFunc(opc) == MEMORY)
+    {
         for (int it = 0; it < opcodes.numOperands(opc); it++)
         {
             if (opcodes.RSposition(opc) == it)
@@ -344,9 +385,10 @@ string MachLangParser::assembleIType(Instruction i)
             else if (opcodes.IMMposition(opc) == it)
                 assembled << i.getImmediate() << "(";
         }
-    // BEQ:
-    //  add support to display a hex-encoded address
-    else if (i.getOpcode() == BEQ)
+    }
+    // case: if instruction is flow control-function
+    else if (opcodes.getInstFunc(opc) == CONTROL)
+    {
         for (int it = 0; it < opcodes.numOperands(opc); it++)
         {
             if (opcodes.RSposition(opc) == it)
@@ -354,13 +396,13 @@ string MachLangParser::assembleIType(Instruction i)
             else if (opcodes.RTposition(opc) == it)
                 assembled << "$" << i.getRT();
             else if (opcodes.IMMposition(opc) == it)
-                // multiply by 4 to account for truncation of
-                // last two 0 bits; pass 'hex' flag for hex output
+                // multiply by 4 to account for truncation of 2 bits
                 assembled << "0x" << hex << i.getImmediate()*4;
 
             if (it < opcodes.numOperands(opc) - 1)
                 assembled << ", ";
         }
+    }
 
     return assembled.str();
 }
@@ -369,6 +411,11 @@ string MachLangParser::assembleIType(Instruction i)
 string MachLangParser::assembleJType(Instruction i)
 // assemble method specific to J-type: put together J-types
 // that involve an address
+//
+// Parameters:
+//  Instruction i := the instruction whose fields are initialized
+//                   to appropriate values and the instruction
+//                   needs to be converted to assembly
 {
     ostringstream assembled;
     // start with the instruction name corresponding to opcode

@@ -26,10 +26,18 @@ enum Opcode{
 
 
 // Different types of MIPS encodings
-enum InstType {
+enum InstType{
   RTYPE,
   ITYPE,
   JTYPE
+};
+
+
+// Different types of MIPS instructions based on function
+enum InstFunc{
+    ARITHM,
+    MEMORY,
+    CONTROL
 };
 
 
@@ -80,10 +88,24 @@ class OpcodeTable {
   // field.
   string getFunctField(Opcode o);
 
-  // ----------------------------
+
+  // Given a string of opcode bits and a string of the funct field
+  // (if applicable), returns the Opcode (enum member) corresponding
+  // to the instruction determined by that opcode and funct field values
   Opcode getInstr(string opc, string funct);
 
+
+  // Given a valid Opcode (enum member) o, returns
+  // the string name of the instruction corresponding
+  // to it
   string getName(Opcode o);
+
+
+  // Given a valid Opcode (enum member) o, returns the
+  // InstFunc of the corresponding instruction, saying what
+  // function the instruction performs (MEMORY/CONTROL/ARITHM)
+  InstFunc getInstFunc(Opcode o);
+
 
  private:
   // Provides information about how where to find values in a MIPS assembly
@@ -99,6 +121,7 @@ class OpcodeTable {
     bool immLabel;
 
     InstType instType;
+    InstFunc instFunc;
     string op_field;
     string funct_field;
 
@@ -107,6 +130,7 @@ class OpcodeTable {
       numOps = 0;
       rdPos = rsPos = rtPos = immPos = -1;
       immLabel = false;
+      instFunc = ARITHM;
     };
   };
 
@@ -114,7 +138,6 @@ class OpcodeTable {
   OpcodeTableEntry myArray[UNDEFINED];
 
   static const int OPCODE_LEN = 6;
-
 
 };
 
