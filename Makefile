@@ -23,6 +23,10 @@ test: DisASM
 	./DisASM inst.mach > inst.out~
 	diff -y inst.out inst.out~
 
+valgrind: DisASM
+	valgrind ./DisASM inst.mach > inst.out~
+	# diff -y inst.out inst.out~
+
 clean:
 	/bin/rm -f DisASM *.o core
 
