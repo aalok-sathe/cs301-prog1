@@ -70,6 +70,7 @@ class MachLangParser{
     static const int REG_WIDTH = 5;      // width of register bit sequence
     static const int J_ADDR_WIDTH = 26;  // width of address bit sequence
     static const int IMM_WIDTH = 16;     // width of immediate field
+    static const int FUNCT_LEN = 6;      // number of bits of funct_field
     static const int ARCH_NUM_BITS = 32; // number of bits of architecture
 
 

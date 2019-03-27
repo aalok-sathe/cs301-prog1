@@ -155,16 +155,21 @@ void MachLangParser::decodeRType(Instruction& i)
     // to their known order, and pre-specified lengths
     int index = 0;
     string opstr = encoding.substr(index, OPCODE_LEN);
+
     index += OPCODE_LEN;
     string rs = encoding.substr(index, REG_WIDTH);
+
     index += REG_WIDTH;
     string rt = encoding.substr(index, REG_WIDTH);
+
     index += REG_WIDTH;
     string rd = encoding.substr(index, REG_WIDTH);
+
     index += REG_WIDTH;
     string shamt = encoding.substr(index, SHAMT_LEN);
+
     index += SHAMT_LEN;
-    string funct = encoding.substr(index, OPCODE_LEN);
+    string funct = encoding.substr(index, FUNCT_LEN);
 
     Opcode opc = opcodes.getInstr(opstr, funct);
 

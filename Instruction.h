@@ -56,7 +56,8 @@ class Instruction{
   // Returns the corresponding assembly instruction text
   string getAssembly() { return myAssembly; }
 
-  // TODO
+  // Given a string, sets the 'myAssembly' variable to that string
+  // the string is meant to be the assembled MIPS Assembly instruction string
   void setAssembly(string s) { myAssembly = s; }
 
  private:
