@@ -7,9 +7,9 @@ using namespace std;
 /* This program is passed the name of a MIPS instruction file.  It
  * reads in that file.  If the file is not a correctly formatted file,
  * the program prints out an error message and exits.  If the file is
- * correctly formatted, the program prints out the binary encoding of
- * each instruction from the file followed by its MIPS assembly
- * representation.
+ * correctly formatted, the program prints out the corresponding assembly
+ * for each binary machine code line from the file followed by its MIPS
+ * assembly representation.
  */
 int main(int argc, char *argv[])
 {

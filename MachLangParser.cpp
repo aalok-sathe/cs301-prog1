@@ -235,6 +235,7 @@ void MachLangParser::decodeJType(Instruction& i)
     // to their known order, and pre-specified lengths
     int index = 0;
     string opstr = encoding.substr(index, OPCODE_LEN);
+
     index += OPCODE_LEN;
     string addr = encoding.substr(index, J_ADDR_WIDTH);
 
@@ -265,7 +266,9 @@ int MachLangParser::convertToInt(string s, SignFlag f)
         int extn = ARCH_NUM_BITS - s.size();
         string signextend(extn, s[0]);
         signextend += s;
+
         std::bitset<ARCH_NUM_BITS> bits(signextend);
+
         return (int)(bits.to_ulong());
     }
 
@@ -289,8 +292,9 @@ void MachLangParser::assemble(Instruction& i)
 {
     string assembled;
 
-    // pick which helper method to call based on InstType
+    // pick which helper method to call based on instruction's InstType
     InstType type = opcodes.getInstType(i.getOpcode());
+
     if (type == RTYPE)
         assembled = assembleRType(i);
     else if (type == ITYPE)
@@ -330,6 +334,7 @@ string MachLangParser::assembleRType(Instruction i)
         else if (opcodes.IMMposition(opc) == it)
             assembled << i.getImmediate();
 
+        // we don't want a comma at the end
         if (it < opcodes.numOperands(opc) - 1)
             assembled << ", ";
     }
@@ -369,6 +374,7 @@ string MachLangParser::assembleIType(Instruction i)
             else if (opcodes.IMMposition(opc) == it)
                 assembled << i.getImmediate();
 
+            // we don't want a comma at the end
             if (it < opcodes.numOperands(opc) - 1)
                 assembled << ", ";
         }
@@ -396,9 +402,11 @@ string MachLangParser::assembleIType(Instruction i)
             else if (opcodes.RTposition(opc) == it)
                 assembled << "$" << i.getRT();
             else if (opcodes.IMMposition(opc) == it)
-                // multiply by 4 to account for truncation of 2 bits
+                // multiply by 4 to account for truncation of 2 bits;
+                // pass 'hex' flag for hex output
                 assembled << "0x" << hex << i.getImmediate()*4;
 
+            // we don't want a comma at the end
             if (it < opcodes.numOperands(opc) - 1)
                 assembled << ", ";
         }
@@ -437,6 +445,7 @@ string MachLangParser::assembleJType(Instruction i)
             // last two 0 bits; pass 'hex' flag for hex output
             assembled << "0x" << hex << i.getImmediate()*4;
 
+        // we don't want a comma at the end
         if (it < opcodes.numOperands(opc) - 1)
             assembled << ", ";
     }
